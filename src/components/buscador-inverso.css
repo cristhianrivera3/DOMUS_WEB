@@ -1,0 +1,138 @@
+.buscador {
+  background: var(--grad-glass);
+  backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  border-radius: var(--radius-xl);
+  padding: clamp(1.4rem, 3vw, 2.2rem);
+  box-shadow: var(--shadow-lg);
+  text-align: left;
+}
+
+.buscador__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.3rem;
+}
+
+.buscador__chip {
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--white);
+  background: var(--grad-brand);
+  padding: 0.38rem 0.9rem;
+  border-radius: var(--radius-pill);
+}
+
+.buscador__live {
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+
+.buscador__live strong {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  color: var(--blue-600);
+  margin-left: 0.35rem;
+}
+
+.buscador__fields {
+  display: grid;
+  grid-template-columns: 1.2fr 1.2fr 0.9fr auto;
+  gap: 0.9rem;
+  align-items: end;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  min-width: 0;
+}
+
+.field__label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--navy-900);
+  letter-spacing: 0.02em;
+}
+
+.field__input {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 0 0.9rem;
+  height: 54px;
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out);
+}
+
+.field__input:focus-within {
+  border-color: var(--blue-500);
+  box-shadow: 0 0 0 4px rgba(29, 111, 242, 0.15);
+}
+
+.field__prefix {
+  font-weight: 700;
+  color: var(--blue-500);
+  font-family: var(--font-display);
+}
+
+.field__input input,
+.field__input select {
+  border: none;
+  outline: none;
+  background: transparent;
+  width: 100%;
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--navy-900);
+  font-variant-numeric: tabular-nums;
+}
+
+.field__input select {
+  cursor: pointer;
+  appearance: none;
+}
+
+.buscador__submit {
+  height: 54px;
+  white-space: nowrap;
+  padding-inline: 1.6rem;
+}
+
+.buscador__submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.buscador__note {
+  margin-top: 1rem;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+@media (max-width: 920px) {
+  .buscador__fields {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .buscador__submit {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 560px) {
+  .buscador__fields {
+    grid-template-columns: 1fr;
+  }
+}
