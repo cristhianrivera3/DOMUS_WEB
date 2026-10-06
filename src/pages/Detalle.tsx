@@ -6,11 +6,13 @@ import MapView from '../components/MapView'
 import Reveal from '../components/Reveal'
 import { APARTAMENTOS, getApartamento } from '../data/apartamentos'
 import { getLocalidad } from '../data/localidades'
+import { useComparador } from '../context/ComparadorContext'
 import { formatArea, formatCOP } from '../utils/format'
 import './detalle.css'
 
 export default function Detalle() {
   const { id } = useParams()
+  const { toggle, ids } = useComparador()
   const apartamento = id ? getApartamento(id) : undefined
   const [foto, setFoto] = useState(0)
 
@@ -136,7 +138,11 @@ export default function Detalle() {
                 <div className="detalle__similares-grid">
                   {similares.map((s, i) => (
                     <Reveal key={s.id} delay={i * 80}>
-                      <ApartmentCard apartamento={s} />
+                      <ApartmentCard
+                        apartamento={s}
+                        onComparar={toggle}
+                        enComparador={ids.includes(s.id)}
+                      />
                     </Reveal>
                   ))}
                 </div>

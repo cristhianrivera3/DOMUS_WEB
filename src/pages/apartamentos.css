@@ -280,6 +280,62 @@
   box-shadow: var(--shadow-xs);
 }
 
+.modo-toggle {
+  display: flex;
+  background: var(--navy-950);
+  border-radius: var(--radius-pill);
+  padding: 4px;
+  gap: 2px;
+}
+
+.modo-toggle button {
+  border: none;
+  background: transparent;
+  padding: 0.45rem 0.95rem;
+  border-radius: var(--radius-pill);
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  transition:
+    background var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out);
+}
+
+.modo-toggle button.is-active {
+  background: var(--blue-500);
+  color: var(--white);
+  box-shadow: var(--shadow-sm);
+}
+
+.inversor-strip {
+  display: flex;
+  align-items: center;
+  gap: 1.6rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.2rem;
+  padding: 0.9rem 1.2rem;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(29, 111, 242, 0.25);
+  background:
+    radial-gradient(120% 200% at 100% 0%, rgba(29, 111, 242, 0.12), transparent 55%),
+    var(--blue-50);
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.inversor-strip strong {
+  color: var(--blue-700);
+  font-family: var(--font-display);
+}
+
+.inversor-strip__hint {
+  margin-left: auto;
+  font-size: 0.78rem;
+  max-width: 34ch;
+}
+
 /* ---------- Grid y vacío ---------- */
 
 .listado__grid {
