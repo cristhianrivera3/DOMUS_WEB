@@ -269,6 +269,17 @@
   width: 100%;
 }
 
+.claridad__ctas .btn.is-on {
+  background: linear-gradient(90deg, var(--blue-600), var(--blue-500));
+  color: var(--white);
+  border-color: transparent;
+}
+
+.claridad__ctas .btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .claridad__disclaimer {
   font-size: 0.72rem;
   line-height: 1.5;

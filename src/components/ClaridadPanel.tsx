@@ -6,9 +6,12 @@ import { PCT_ENTRADA, PCT_CUOTA_INGRESO, cuotaEstimada, gastosDeCompra } from '.
 import { domusScore } from '../utils/score'
 import { APARTAMENTOS } from '../data/apartamentos'
 import { SITE } from '../config/site'
+import { useComparador } from '../context/ComparadorContext'
 import './claridad-panel.css'
 
 export default function ClaridadPanel({ apartamento: a }: { apartamento: Apartamento }) {
+  const { toggle, ids, lleno } = useComparador()
+  const enComparador = ids.includes(a.id)
   const gastos = gastosDeCompra(a.precio)
   const entrada = a.precio * PCT_ENTRADA
   const ahorrosNecesarios = entrada + gastos.total
@@ -146,6 +149,15 @@ export default function ClaridadPanel({ apartamento: a }: { apartamento: Apartam
         <a className="btn btn--ghost" href={`mailto:${SITE.email}?subject=${encodeURIComponent(a.titulo)}`}>
           Solicitar información
         </a>
+        <button
+          type="button"
+          className={`btn btn--ghost ${enComparador ? 'is-on' : ''}`}
+          onClick={() => toggle(a.id)}
+          disabled={lleno && !enComparador}
+          title={lleno && !enComparador ? 'Máximo 3 unidades en el comparador' : undefined}
+        >
+          {enComparador ? '✓ En el comparador' : '⚖ Agregar al comparador'}
+        </button>
       </div>
 
       <p className="claridad__disclaimer">

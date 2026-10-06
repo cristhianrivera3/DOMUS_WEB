@@ -8,11 +8,18 @@ interface ApartmentCardProps {
   apartamento: Apartamento
   onComparar?: (id: string) => void
   enComparador?: boolean
+  modoInversor?: boolean
 }
 
-export default function ApartmentCard({ apartamento: a, onComparar, enComparador }: ApartmentCardProps) {
+export default function ApartmentCard({
+  apartamento: a,
+  onComparar,
+  enComparador,
+  modoInversor = false,
+}: ApartmentCardProps) {
   const loc = getLocalidad(a.localidadId)
   const precioM2 = a.precio / a.area
+  const rentabilidadAnual = (a.arriendoEstimado * 12) / a.precio
 
   return (
     <article className="apt-card card">
@@ -55,6 +62,23 @@ export default function ApartmentCard({ apartamento: a, onComparar, enComparador
           </li>
         </ul>
 
+        {modoInversor && (
+          <ul className="apt-card__inversor" aria-label="Indicadores de inversión">
+            <li>
+              <strong>{(rentabilidadAnual * 100).toFixed(1)}%</strong>
+              <span>rent. anual</span>
+            </li>
+            <li>
+              <strong>{formatMillones(a.arriendoEstimado, 1)}</strong>
+              <span>arriendo/mes</span>
+            </li>
+            <li>
+              <strong>{a.valorizacionAnual.toFixed(1)}%</strong>
+              <span>valorización</span>
+            </li>
+          </ul>
+        )}
+
         <div className="apt-card__footer">
           <span className="apt-card__admin">
             Admin. {formatCOP(a.administracion)}/mes
@@ -66,6 +90,7 @@ export default function ApartmentCard({ apartamento: a, onComparar, enComparador
                 className={`apt-card__compare ${enComparador ? 'is-active' : ''}`}
                 onClick={() => onComparar(a.id)}
                 aria-label={enComparador ? 'Quitar del comparador' : 'Añadir al comparador'}
+                title={enComparador ? 'Quitar del comparador' : 'Añadir al comparador'}
               >
                 {enComparador ? '✓' : '+'}
               </button>

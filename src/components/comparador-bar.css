@@ -1,0 +1,152 @@
+.cbar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 90;
+  background: rgba(6, 21, 43, 0.92);
+  backdrop-filter: blur(14px);
+  border-top: 1px solid rgba(127, 176, 255, 0.25);
+  box-shadow: 0 -18px 40px rgba(6, 21, 43, 0.35);
+  padding: 0.8rem 0;
+  animation: slide-up 0.45s var(--ease-out);
+}
+
+.cbar__inner {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  position: relative;
+}
+
+.cbar__label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--blue-300);
+  flex-shrink: 0;
+}
+
+.cbar__label strong {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  color: var(--white);
+}
+
+.cbar__chips {
+  list-style: none;
+  display: flex;
+  gap: 0.55rem;
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  padding-bottom: 0.15rem;
+}
+
+.cbar__chip {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(127, 176, 255, 0.25);
+  border-radius: var(--radius-pill);
+  padding: 0.4rem 0.45rem 0.4rem 0.9rem;
+  white-space: nowrap;
+  animation: fade-in 0.3s var(--ease-out);
+}
+
+.cbar__chip-name {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--white);
+  max-width: 16ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cbar__chip-price {
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  color: var(--blue-300);
+}
+
+.cbar__chip button {
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.14);
+  color: var(--white);
+  font-size: 0.95rem;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background var(--dur-fast) var(--ease-out),
+    transform var(--dur-fast) var(--ease-out);
+}
+
+.cbar__chip button:hover {
+  background: var(--danger, #ef4444);
+  transform: scale(1.1);
+}
+
+.cbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-shrink: 0;
+}
+
+.cbar__vaciar {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.8rem;
+  text-decoration: underline;
+  cursor: pointer;
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.cbar__vaciar:hover {
+  color: var(--white);
+}
+
+.cbar__full {
+  position: absolute;
+  right: 0;
+  top: -1.55rem;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--blue-300);
+  background: rgba(6, 21, 43, 0.9);
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--radius-pill);
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 720px) {
+  .cbar__chip-name {
+    max-width: 10ch;
+  }
+
+  .cbar__label {
+    display: none;
+  }
+}

@@ -3,6 +3,7 @@ import BuscadorInverso from '../components/BuscadorInverso'
 import ApartmentCard from '../components/ApartmentCard'
 import Reveal from '../components/Reveal'
 import AnimatedNumber from '../components/AnimatedNumber'
+import { useComparador } from '../context/ComparadorContext'
 import { APARTAMENTOS } from '../data/apartamentos'
 import { LOCALIDADES } from '../data/localidades'
 import { CIFRAS_DOMUS, MERCADO } from '../data/mercado'
@@ -41,6 +42,8 @@ const TOP_LOCALIDADES = [...LOCALIDADES].sort((a, b) => b.precioM2 - a.precioM2)
 const MAX_PRECIO_M2 = TOP_LOCALIDADES[0]?.precioM2 ?? 1
 
 export default function Home() {
+  const { toggle, ids } = useComparador()
+
   return (
     <>
       <section className="hero grid-bg">
@@ -140,7 +143,11 @@ export default function Home() {
           <div className="destacados__grid">
             {DESTACADOS.map((a, i) => (
               <Reveal key={a.id} delay={i * 90}>
-                <ApartmentCard apartamento={a} />
+                <ApartmentCard
+                  apartamento={a}
+                  onComparar={toggle}
+                  enComparador={ids.includes(a.id)}
+                />
               </Reveal>
             ))}
           </div>

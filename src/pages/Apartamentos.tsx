@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import ApartmentCard from '../components/ApartmentCard'
 import MapView from '../components/MapView'
 import Reveal from '../components/Reveal'
+import { useComparador } from '../context/ComparadorContext'
 import { APARTAMENTOS } from '../data/apartamentos'
 import { LOCALIDADES } from '../data/localidades'
 import { formatMillones } from '../utils/format'
@@ -10,6 +11,7 @@ import './apartamentos.css'
 
 type Orden = 'recientes' | 'precio-asc' | 'precio-desc' | 'm2-asc' | 'rentabilidad'
 type Vista = 'lista' | 'mapa'
+type Modo = 'vivir' | 'inversor'
 
 const LOCALIDADES_EN_VENTA = LOCALIDADES.filter((l) =>
   APARTAMENTOS.some((a) => a.localidadId === l.id),
@@ -29,6 +31,7 @@ const PRECIO_MAX = 2_000_000_000
 export default function Apartamentos() {
   const [params] = useSearchParams()
   const navigate = useNavigate()
+  const { toggle, ids } = useComparador()
 
   const [presupuesto, setPresupuesto] = useState(() => {
     const p = Number(params.get('presupuesto'))
@@ -44,6 +47,13 @@ export default function Apartamentos() {
   const [soloVIS, setSoloVIS] = useState(false)
   const [orden, setOrden] = useState<Orden>('recientes')
   const [vista, setVista] = useState<Vista>('lista')
+  const [modo, setModo] = useState<Modo>('vivir')
+
+  const cambiarModo = (m: Modo) => {
+    setModo(m)
+    if (m === 'inversor' && orden !== 'rentabilidad') setOrden('rentabilidad')
+    if (m === 'vivir' && orden === 'rentabilidad') setOrden('recientes')
+  }
 
   const hayPresupuesto = presupuesto < PRECIO_MAX
 
@@ -74,6 +84,16 @@ export default function Apartamentos() {
         return filtrados.sort((a, b) => a.antiguedadDias - b.antiguedadDias)
     }
   }, [presupuesto, habMin, localidad, estrato, tipo, soloVIS, orden])
+
+  const rentaPromedio =
+    resultados.length > 0
+      ? resultados.reduce((acc, a) => acc + (a.arriendoEstimado * 12) / a.precio, 0) /
+        resultados.length
+      : 0
+  const arriendoPromedio =
+    resultados.length > 0
+      ? resultados.reduce((acc, a) => acc + a.arriendoEstimado, 0) / resultados.length
+      : 0
 
   const limpiar = () => {
     setPresupuesto(PRECIO_MAX)
@@ -229,8 +249,39 @@ export default function Apartamentos() {
                   Mapa
                 </button>
               </div>
+
+              <div className="modo-toggle" role="group" aria-label="Modo de visualización">
+                <button
+                  type="button"
+                  className={modo === 'vivir' ? 'is-active' : ''}
+                  onClick={() => cambiarModo('vivir')}
+                >
+                  🏠 Vivir
+                </button>
+                <button
+                  type="button"
+                  className={modo === 'inversor' ? 'is-active' : ''}
+                  onClick={() => cambiarModo('inversor')}
+                >
+                  📈 Inversor
+                </button>
+              </div>
             </div>
           </div>
+
+          {modo === 'inversor' && vista === 'lista' && resultados.length > 0 && (
+            <div className="inversor-strip">
+              <span>
+                Rentabilidad promedio <strong>{(rentaPromedio * 100).toFixed(1)}%</strong>
+              </span>
+              <span>
+                Arriendo estimado promedio <strong>{formatMillones(arriendoPromedio, 1)}/mes</strong>
+              </span>
+              <span className="inversor-strip__hint">
+                Datos estimados con arriendos promedio de la zona, pre-proyecto.
+              </span>
+            </div>
+          )}
 
           {resultados.length === 0 ? (
             <div className="vacio card">
@@ -252,7 +303,12 @@ export default function Apartamentos() {
             <div className="listado__grid">
               {resultados.map((a, i) => (
                 <Reveal key={a.id} delay={Math.min(i * 60, 360)}>
-                  <ApartmentCard apartamento={a} />
+                  <ApartmentCard
+                    apartamento={a}
+                    onComparar={toggle}
+                    enComparador={ids.includes(a.id)}
+                    modoInversor={modo === 'inversor'}
+                  />
                 </Reveal>
               ))}
             </div>
