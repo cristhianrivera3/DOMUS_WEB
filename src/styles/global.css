@@ -1,0 +1,26 @@
+:root {
+  --blue-950: #0b1f3a;
+  --blue-700: #12408a;
+  --blue-500: #1d6ff2;
+  --blue-100: #e4efff;
+  --white: #ffffff;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  background: var(--white);
+  color: var(--blue-950);
+}
+
+.header-placeholder,
+.footer-placeholder,
+.page-placeholder {
+  padding: 1rem;
+  text-align: center;
+}
