@@ -88,6 +88,21 @@
   letter-spacing: 0.05em;
 }
 
+.footer__legal {
+  display: flex;
+  gap: 1rem;
+}
+
+.footer__legal-link {
+  color: var(--blue-300);
+  text-decoration: underline;
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.footer__legal-link:hover {
+  color: var(--white);
+}
+
 @media (max-width: 920px) {
   .footer__grid {
     grid-template-columns: 1fr 1fr;

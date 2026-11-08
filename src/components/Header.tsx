@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import Logo from './Logo'
 import { SITE } from '../config/site'
+import { track } from '../utils/analytics'
 import './header.css'
 
 const NAV_LINKS = [
@@ -9,6 +10,7 @@ const NAV_LINKS = [
   { to: '/apartamentos', label: 'Apartamentos' },
   { to: '/simulador', label: 'Simulador' },
   { to: '/comparador', label: 'Comparador' },
+  { to: '/favoritos', label: 'Favoritos' },
   { to: '/contacto', label: 'Contacto' },
 ]
 
@@ -30,6 +32,15 @@ export default function Header() {
     }
   }, [open])
 
+  useEffect(() => {
+    if (!open) return
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setOpen(false)
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [open])
+
   return (
     <header className={`header ${scrolled ? 'header--scrolled' : ''}`}>
       <div className="container header__inner">
@@ -37,7 +48,11 @@ export default function Header() {
           <Logo />
         </Link>
 
-        <nav className={`header__nav ${open ? 'is-open' : ''}`} aria-label="Principal">
+        <nav
+          id="menu-principal"
+          className={`header__nav ${open ? 'is-open' : ''}`}
+          aria-label="Principal"
+        >
           {NAV_LINKS.map((link) => (
             <NavLink
               key={link.to}
@@ -54,7 +69,10 @@ export default function Header() {
             href={SITE.whatsapp}
             target="_blank"
             rel="noreferrer"
-            onClick={() => setOpen(false)}
+            onClick={() => {
+              setOpen(false)
+              track('header_whatsapp')
+            }}
           >
             Escríbenos
           </a>
@@ -66,14 +84,16 @@ export default function Header() {
             href={SITE.whatsapp}
             target="_blank"
             rel="noreferrer"
+            onClick={() => track('header_whatsapp')}
           >
             Agenda tu visita
           </a>
           <button
             type="button"
             className={`burger ${open ? 'is-open' : ''}`}
-            aria-label="Abrir menú"
+            aria-label={open ? 'Cerrar menú' : 'Abrir menú'}
             aria-expanded={open}
+            aria-controls="menu-principal"
             onClick={() => setOpen((v) => !v)}
           >
             <span />

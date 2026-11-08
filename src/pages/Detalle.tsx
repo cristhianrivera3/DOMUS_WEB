@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import ClaridadPanel from '../components/ClaridadPanel'
 import ApartmentCard from '../components/ApartmentCard'
@@ -7,7 +7,10 @@ import Reveal from '../components/Reveal'
 import { APARTAMENTOS, getApartamento } from '../data/apartamentos'
 import { getLocalidad } from '../data/localidades'
 import { useComparador } from '../context/ComparadorContext'
+import { SITE } from '../config/site'
 import { formatArea, formatCOP } from '../utils/format'
+import { unsplashSrcSet } from '../utils/image'
+import { usePageMeta } from '../hooks/usePageMeta'
 import './detalle.css'
 
 export default function Detalle() {
@@ -15,6 +18,57 @@ export default function Detalle() {
   const { toggle, ids } = useComparador()
   const apartamento = id ? getApartamento(id) : undefined
   const [foto, setFoto] = useState(0)
+  const itemsMapa = useMemo(() => (apartamento ? [apartamento] : []), [apartamento])
+
+  const locMeta = apartamento ? getLocalidad(apartamento.localidadId) : undefined
+
+  usePageMeta(
+    apartamento && locMeta
+      ? {
+          title: `${apartamento.titulo} — ${locMeta.nombre} en venta`,
+          description: `${apartamento.titulo} en ${apartamento.barrio}, ${locMeta.nombre}. ${apartamento.area} m², ${apartamento.habitaciones} habitaciones. ${formatCOP(apartamento.precio)}. Panel de Claridad y Domus Score.`,
+          path: `/apartamentos/${apartamento.id}`,
+          image: apartamento.fotos[0],
+          jsonLd: {
+            '@context': 'https://schema.org',
+            '@type': 'RealEstateListing',
+            name: apartamento.titulo,
+            description: apartamento.descripcion,
+            url: `${SITE.url}/apartamentos/${apartamento.id}`,
+            image: apartamento.fotos,
+            offers: {
+              '@type': 'Offer',
+              price: apartamento.precio,
+              priceCurrency: 'COP',
+              availability: 'https://schema.org/InStock',
+            },
+            address: {
+              '@type': 'PostalAddress',
+              streetAddress: apartamento.barrio,
+              addressLocality: 'Bogotá',
+              addressRegion: 'Bogotá DC',
+              addressCountry: 'CO',
+            },
+            geo: {
+              '@type': 'GeoCoordinates',
+              latitude: apartamento.lat,
+              longitude: apartamento.lng,
+            },
+            floorSize: {
+              '@type': 'QuantitativeValue',
+              value: apartamento.area,
+              unitCode: 'MTK',
+            },
+            numberOfRooms: apartamento.habitaciones,
+            numberOfBathroomsTotal: apartamento.banos,
+          },
+        }
+      : {
+          title: 'Unidad no encontrada',
+          description: 'La unidad que buscas no está disponible en el catálogo DOMUS.',
+          path: `/apartamentos/${id ?? ''}`,
+        },
+  )
 
   if (!apartamento) {
     return (
@@ -83,7 +137,16 @@ export default function Detalle() {
           <div className="detalle__main">
             <div className="galeria">
               <div className="galeria__main">
-                <img src={a.fotos[foto]} alt={`${a.titulo} — foto ${foto + 1}`} />
+                <img
+                  src={a.fotos[foto]}
+                  srcSet={unsplashSrcSet(a.fotos[foto], [640, 960, 1400])}
+                  sizes="(max-width: 1080px) 92vw, 800px"
+                  width={1200}
+                  height={675}
+                  alt={`${a.titulo} — foto ${foto + 1}`}
+                  loading={foto === 0 ? 'eager' : 'lazy'}
+                  decoding="async"
+                />
                 <span className="galeria__counter">
                   {foto + 1} / {a.fotos.length}
                 </span>
@@ -97,7 +160,16 @@ export default function Detalle() {
                     onClick={() => setFoto(i)}
                     aria-label={`Ver foto ${i + 1}`}
                   >
-                    <img src={f} alt="" />
+                    <img
+                      src={f}
+                      srcSet={unsplashSrcSet(f, [160, 320])}
+                      sizes="120px"
+                      width={160}
+                      height={100}
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                    />
                   </button>
                 ))}
               </div>
@@ -129,7 +201,7 @@ export default function Detalle() {
               <p className="detalle__mapa-sub">
                 {loc.nombre} — {loc.resumen}
               </p>
-              <MapView items={[a]} onSelect={() => undefined} />
+              <MapView items={itemsMapa} onSelect={() => undefined} />
             </div>
 
             {similares.length > 0 && (

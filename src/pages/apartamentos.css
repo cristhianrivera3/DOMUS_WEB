@@ -352,25 +352,6 @@
   height: 100%;
 }
 
-.vacio {
-  text-align: center;
-  padding: clamp(3rem, 6vw, 5rem) 2rem;
-}
-
-.vacio__icon {
-  font-size: 2.6rem;
-  margin-bottom: 1rem;
-  filter: grayscale(0.2);
-}
-
-.vacio h3 {
-  margin-bottom: 0.5rem;
-}
-
-.vacio p {
-  margin-bottom: 1.5rem;
-}
-
 @media (max-width: 960px) {
   .listado__layout {
     grid-template-columns: 1fr;

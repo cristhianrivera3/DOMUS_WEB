@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import Logo from './Logo'
 import { SITE } from '../config/site'
+import { track } from '../utils/analytics'
 import './footer.css'
 
 const NAV = [
@@ -8,7 +9,13 @@ const NAV = [
   { to: '/apartamentos', label: 'Apartamentos' },
   { to: '/simulador', label: 'Simulador de crédito' },
   { to: '/comparador', label: 'Comparador' },
+  { to: '/favoritos', label: 'Favoritos' },
   { to: '/contacto', label: 'Contacto' },
+]
+
+const LEGAL = [
+  { to: '/privacidad', label: 'Privacidad' },
+  { to: '/terminos', label: 'Términos' },
 ]
 
 const SERVICES = [
@@ -33,6 +40,7 @@ export default function Footer() {
             href={SITE.whatsapp}
             target="_blank"
             rel="noreferrer"
+            onClick={() => track('footer_whatsapp')}
           >
             Hablar por WhatsApp
           </a>
@@ -72,6 +80,13 @@ export default function Footer() {
         <span>
           © {year} DOMUS · {SITE.city}
         </span>
+        <nav className="footer__legal" aria-label="Legal">
+          {LEGAL.map((item) => (
+            <Link key={item.to} to={item.to} className="footer__legal-link">
+              {item.label}
+            </Link>
+          ))}
+        </nav>
         <span className="footer__stack">Hecho con React + TypeScript · Vite</span>
       </div>
     </footer>

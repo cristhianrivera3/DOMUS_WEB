@@ -2,11 +2,19 @@ import type { CSSProperties } from 'react'
 import type { Apartamento } from '../data/types'
 import { getLocalidad } from '../data/localidades'
 import { formatCOP, formatMillones } from '../utils/format'
-import { PCT_ENTRADA, PCT_CUOTA_INGRESO, cuotaEstimada, gastosDeCompra } from '../utils/finanzas'
+import {
+  PCT_ENTRADA,
+  PCT_CUOTA_INGRESO,
+  PLAZO_DEFAULT,
+  TASA_EA_DEFAULT,
+  cuotaEstimada,
+  gastosDeCompra,
+} from '../utils/finanzas'
 import { domusScore } from '../utils/score'
 import { APARTAMENTOS } from '../data/apartamentos'
 import { SITE } from '../config/site'
 import { useComparador } from '../context/ComparadorContext'
+import { track } from '../utils/analytics'
 import './claridad-panel.css'
 
 export default function ClaridadPanel({ apartamento: a }: { apartamento: Apartamento }) {
@@ -51,7 +59,9 @@ export default function ClaridadPanel({ apartamento: a }: { apartamento: Apartam
 
       <div className="claridad__block">
         <div className="claridad__title">
-          <h3>💎 Panel de Claridad™</h3>
+          <h3>
+            <span aria-hidden="true">💎</span> Panel de Claridad™
+          </h3>
           <span>Costo real total</span>
         </div>
 
@@ -84,7 +94,9 @@ export default function ClaridadPanel({ apartamento: a }: { apartamento: Apartam
             <em>{formatCOP(gastos.avaluo)}</em>
           </li>
           <li className="claridad__highlight">
-            <span>💰 Ahorros necesarios</span>
+            <span>
+              <span aria-hidden="true">💰</span> Ahorros necesarios
+            </span>
             <strong>{formatCOP(ahorrosNecesarios)}</strong>
           </li>
         </ul>
@@ -93,7 +105,9 @@ export default function ClaridadPanel({ apartamento: a }: { apartamento: Apartam
       <div className="claridad__block claridad__block--blue">
         <div className="claridad__title">
           <h3>Tu crédito estimado</h3>
-          <span>10,5% EA · 20 años</span>
+          <span>
+            {(TASA_EA_DEFAULT * 100).toFixed(1)}% EA · {PLAZO_DEFAULT} años
+          </span>
         </div>
 
         <ul className="claridad__rows">
@@ -106,19 +120,24 @@ export default function ClaridadPanel({ apartamento: a }: { apartamento: Apartam
             <strong>{formatCOP(a.administracion)}</strong>
           </li>
           <li className="claridad__highlight">
-            <span>🏠 Costo mensual total</span>
+            <span>
+              <span aria-hidden="true">🏠</span> Costo mensual total
+            </span>
             <strong>{formatCOP(totalMensual)}</strong>
           </li>
           <li className="claridad__hint">
             Necesitas un ingreso mensual desde{' '}
-            <strong>{formatCOP(ingresoNecesario)}</strong> para sostener la cuota (30% del ingreso).
+            <strong>{formatCOP(ingresoNecesario)}</strong> para sostener la cuota (
+            {Math.round(PCT_CUOTA_INGRESO * 100)}% del ingreso).
           </li>
         </ul>
       </div>
 
       <div className="claridad__block claridad__inversor">
         <div className="claridad__title">
-          <h3>📈 Modo Inversor</h3>
+          <h3>
+            <span aria-hidden="true">📈</span> Modo Inversor
+          </h3>
           <span>Dato de la zona</span>
         </div>
         <div className="claridad__inversor-grid">
@@ -143,20 +162,36 @@ export default function ClaridadPanel({ apartamento: a }: { apartamento: Apartam
           href={`${SITE.whatsapp.split('?')[0]}?text=${whatsappTexto}`}
           target="_blank"
           rel="noreferrer"
+          onClick={() => track('ficha_whatsapp', { id: a.id })}
         >
           Agendar visita por WhatsApp
         </a>
-        <a className="btn btn--ghost" href={`mailto:${SITE.email}?subject=${encodeURIComponent(a.titulo)}`}>
+        <a
+          className="btn btn--ghost"
+          href={`mailto:${SITE.email}?subject=${encodeURIComponent(a.titulo)}`}
+          onClick={() => track('ficha_email', { id: a.id })}
+        >
           Solicitar información
         </a>
         <button
           type="button"
           className={`btn btn--ghost ${enComparador ? 'is-on' : ''}`}
-          onClick={() => toggle(a.id)}
+          onClick={() => {
+            toggle(a.id)
+            track('ficha_comparador', { id: a.id })
+          }}
           disabled={lleno && !enComparador}
           title={lleno && !enComparador ? 'Máximo 3 unidades en el comparador' : undefined}
         >
-          {enComparador ? '✓ En el comparador' : '⚖ Agregar al comparador'}
+          {enComparador ? (
+            <>
+              <span aria-hidden="true">✓</span> En el comparador
+            </>
+          ) : (
+            <>
+              <span aria-hidden="true">⚖</span> Agregar al comparador
+            </>
+          )}
         </button>
       </div>
 

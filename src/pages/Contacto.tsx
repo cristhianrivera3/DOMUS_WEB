@@ -1,5 +1,8 @@
 import { useState, type FormEvent } from 'react'
 import { SITE } from '../config/site'
+import { usePageMeta } from '../hooks/usePageMeta'
+import { enviarLead } from '../services/leads'
+import { track } from '../utils/analytics'
 import './contacto.css'
 
 const MOTIVOS = [
@@ -11,6 +14,13 @@ const MOTIVOS = [
 ]
 
 export default function Contacto() {
+  usePageMeta({
+    title: 'Contacto y asesoría',
+    description:
+      'Habla con un asesor DOMUS por WhatsApp: compra, venta, inversión o simulación de crédito. Claridad total, sin presión.',
+    path: '/contacto',
+  })
+
   const [nombre, setNombre] = useState('')
   const [telefono, setTelefono] = useState('')
   const [correo, setCorreo] = useState('')
@@ -19,7 +29,18 @@ export default function Contacto() {
 
   const enviar = (e: FormEvent) => {
     e.preventDefault()
-    const texto = `Hola ${SITE.name}, soy ${nombre}.\nMotivo: ${motivo}.\n${mensaje ? `Detalle: ${mensaje}\n` : ''}¿Me ayudan?`
+    void enviarLead({ nombre, telefono, correo, motivo, mensaje })
+    track('contacto_whatsapp', { motivo })
+    const texto = [
+      `Hola ${SITE.name}, soy ${nombre}.`,
+      `Motivo: ${motivo}.`,
+      telefono ? `Teléfono: ${telefono}` : '',
+      correo ? `Correo: ${correo}` : '',
+      mensaje ? `Detalle: ${mensaje}` : '',
+      '¿Me ayudan?',
+    ]
+      .filter(Boolean)
+      .join('\n')
     window.open(
       `${SITE.whatsapp.split('?')[0]}?text=${encodeURIComponent(texto)}`,
       '_blank',
@@ -106,7 +127,8 @@ export default function Contacto() {
             </label>
 
             <p className="cont-form__note">
-              Al enviar se abre WhatsApp con tu mensaje ya escrito. Solo debes presionar enviar. 📲
+              Al enviar se abre WhatsApp con tu mensaje ya escrito. Solo debes presionar enviar.{' '}
+              <span aria-hidden="true">📲</span>
             </p>
 
             <button type="submit" className="btn btn--primary cont-form__submit">
@@ -119,28 +141,28 @@ export default function Contacto() {
               <h3>Datos de contacto</h3>
               <ul>
                 <li>
-                  <span>📞</span>
+                  <span aria-hidden="true">📞</span>
                   <div>
                     <strong>Línea directa</strong>
                     <a href={`tel:${SITE.phone.replace(/\s/g, '')}`}>{SITE.phone}</a>
                   </div>
                 </li>
                 <li>
-                  <span>✉️</span>
+                  <span aria-hidden="true">✉️</span>
                   <div>
                     <strong>Correo</strong>
                     <a href={`mailto:${SITE.email}`}>{SITE.email}</a>
                   </div>
                 </li>
                 <li>
-                  <span>📍</span>
+                  <span aria-hidden="true">📍</span>
                   <div>
                     <strong>Ubicación</strong>
                     <p>{SITE.city}</p>
                   </div>
                 </li>
                 <li>
-                  <span>🕘</span>
+                  <span aria-hidden="true">🕘</span>
                   <div>
                     <strong>Horario</strong>
                     <p>Lun a Sáb · 8am a 6pm</p>
@@ -166,6 +188,7 @@ export default function Contacto() {
               )}`}
               target="_blank"
               rel="noreferrer"
+              onClick={() => track('contacto_asesoria_whatsapp')}
             >
               <strong>¿Prefieres llamar o escribir ya?</strong>
               <span>Agenda una asesoría gratuita por WhatsApp</span>

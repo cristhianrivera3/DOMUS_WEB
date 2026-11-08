@@ -2,6 +2,9 @@ import { Link } from 'react-router-dom'
 import type { Apartamento } from '../data/types'
 import { getLocalidad } from '../data/localidades'
 import { formatCOP, formatMillones, formatArea } from '../utils/format'
+import { unsplashSrcSet } from '../utils/image'
+import { track } from '../utils/analytics'
+import { useFavoritos } from '../context/FavoritosContext'
 import './apartment-card.css'
 
 interface ApartmentCardProps {
@@ -20,17 +23,41 @@ export default function ApartmentCard({
   const loc = getLocalidad(a.localidadId)
   const precioM2 = a.precio / a.area
   const rentabilidadAnual = (a.arriendoEstimado * 12) / a.precio
+  const { tiene, toggle: toggleFavorito } = useFavoritos()
+  const esFavorito = tiene(a.id)
 
   return (
     <article className="apt-card card">
       <Link to={`/apartamentos/${a.id}`} className="apt-card__media">
-        <img src={a.fotos[0]} alt={a.titulo} loading="lazy" />
+        <img
+          src={a.fotos[0]}
+          srcSet={unsplashSrcSet(a.fotos[0])}
+          sizes="(max-width: 640px) 92vw, (max-width: 1100px) 46vw, 360px"
+          width={1200}
+          height={750}
+          alt={a.titulo}
+          loading="lazy"
+          decoding="async"
+        />
         <div className="apt-card__badges">
           {a.estado === 'nuevo' && <span className="badge badge--nuevo">Nuevo</span>}
           {a.vis && <span className="badge badge--vis">VIS</span>}
           <span className="badge badge--tipo">{a.tipo}</span>
         </div>
       </Link>
+
+      <button
+        type="button"
+        className={`apt-card__fav ${esFavorito ? 'is-active' : ''}`}
+        onClick={() => {
+          toggleFavorito(a.id)
+          track('favorito_toggle', { id: a.id, activo: !esFavorito })
+        }}
+        aria-label={esFavorito ? 'Quitar de favoritos' : 'Guardar en favoritos'}
+        aria-pressed={esFavorito}
+      >
+        <span aria-hidden="true">{esFavorito ? '♥' : '♡'}</span>
+      </button>
 
       <div className="apt-card__body">
         <div className="apt-card__loc">
@@ -58,7 +85,7 @@ export default function ApartmentCard({
             <strong>{a.banos}</strong> {a.banos === 1 ? 'baño' : 'baños'}
           </li>
           <li>
-            <strong>{a.parqueaderos}</strong> {a.parqueaderos === 1 ? 'parq' : 'parq'}
+            <strong>{a.parqueaderos}</strong> {a.parqueaderos === 1 ? 'parq' : 'parqs'}
           </li>
         </ul>
 

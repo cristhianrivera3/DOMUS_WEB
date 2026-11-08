@@ -15,6 +15,11 @@ export default function MapView({ items, onSelect }: MapViewProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<L.Map | null>(null)
   const layerRef = useRef<L.LayerGroup | null>(null)
+  const onSelectRef = useRef(onSelect)
+
+  useEffect(() => {
+    onSelectRef.current = onSelect
+  }, [onSelect])
 
   useEffect(() => {
     const container = containerRef.current
@@ -73,7 +78,7 @@ export default function MapView({ items, onSelect }: MapViewProps) {
       )
       marker.on('popupopen', (e) => {
         const el = (e.popup as L.Popup).getElement()?.querySelector('.map-popup__cta')
-        el?.addEventListener('click', () => onSelect(a.id))
+        el?.addEventListener('click', () => onSelectRef.current(a.id))
       })
       marker.addTo(layer)
       bounds.extend([a.lat, a.lng])
@@ -82,7 +87,7 @@ export default function MapView({ items, onSelect }: MapViewProps) {
     if (items.length > 0) {
       map.fitBounds(bounds.pad(0.25), { maxZoom: 14 })
     }
-  }, [items, onSelect])
+  }, [items])
 
   return <div ref={containerRef} className="map-view" role="region" aria-label="Mapa de apartamentos" />
 }

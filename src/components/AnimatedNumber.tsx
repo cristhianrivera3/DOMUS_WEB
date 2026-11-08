@@ -23,6 +23,14 @@ export default function AnimatedNumber({
   useEffect(() => {
     const el = ref.current
     if (!el) return
+
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+      fromRef.current = value
+      started.current = true
+      setDisplay(value)
+      return
+    }
+
     let raf = 0
 
     const animate = () => {

@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import BuscadorInverso from '../components/BuscadorInverso'
 import ApartmentCard from '../components/ApartmentCard'
+import ColombiaMap from '../components/ColombiaMap'
 import Reveal from '../components/Reveal'
 import AnimatedNumber from '../components/AnimatedNumber'
 import { useComparador } from '../context/ComparadorContext'
@@ -9,6 +10,8 @@ import { LOCALIDADES } from '../data/localidades'
 import { CIFRAS_DOMUS, MERCADO } from '../data/mercado'
 import { formatMillones, formatPct } from '../utils/format'
 import { SITE } from '../config/site'
+import { usePageMeta } from '../hooks/usePageMeta'
+import { track } from '../utils/analytics'
 import './home.css'
 
 const DESTACADOS = ['a-04', 'a-02', 'a-03', 'a-09']
@@ -44,9 +47,17 @@ const MAX_PRECIO_M2 = TOP_LOCALIDADES[0]?.precioM2 ?? 1
 export default function Home() {
   const { toggle, ids } = useComparador()
 
+  usePageMeta({
+    title: 'DOMUS — Apartamentos en Bogotá con claridad total',
+    description:
+      'Descubre qué apartamentos puedes comprar en Bogotá con tu presupuesto real: cuota inicial, crédito, gastos y rentabilidad.',
+    path: '/',
+  })
+
   return (
     <>
       <section className="hero grid-bg">
+        <ColombiaMap className="hero__map" />
         <div className="orb orb--blue hero__orb-1" aria-hidden="true" />
         <div className="orb orb--cyan hero__orb-2" aria-hidden="true" />
 
@@ -223,7 +234,13 @@ export default function Home() {
               Agenda una visita o escríbenos: te respondemos con números claros, no con promesas.
             </p>
             <div className="cta-final__actions">
-              <a className="btn btn--whatsapp btn--lg" href={SITE.whatsapp} target="_blank" rel="noreferrer">
+              <a
+                className="btn btn--whatsapp btn--lg"
+                href={SITE.whatsapp}
+                target="_blank"
+                rel="noreferrer"
+                onClick={() => track('home_whatsapp')}
+              >
                 Hablar por WhatsApp
               </a>
               <Link to="/simulador" className="btn btn--ghost btn--lg cta-final__ghost">

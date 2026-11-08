@@ -3,9 +3,17 @@ import { useComparador, MAX_COMPARADOR } from '../context/ComparadorContext'
 import { APARTAMENTOS } from '../data/apartamentos'
 import { getLocalidad } from '../data/localidades'
 import { domusScore } from '../utils/score'
-import { cuotaEstimada, ahorrosNecesarios } from '../utils/finanzas'
+import {
+  PCT_ENTRADA,
+  PLAZO_DEFAULT,
+  TASA_EA_DEFAULT,
+  ahorrosNecesarios,
+  cuotaEstimada,
+  gastosDeCompra,
+} from '../utils/finanzas'
 import { formatArea, formatCOP, formatMillones } from '../utils/format'
 import type { Apartamento } from '../data/types'
+import { usePageMeta } from '../hooks/usePageMeta'
 import './comparador.css'
 
 interface Fila {
@@ -65,6 +73,13 @@ const FILAS: Fila[] = [
 
 export default function Comparador() {
   const { ids, quitar, limpiar } = useComparador()
+
+  usePageMeta({
+    title: 'Comparador de apartamentos',
+    description:
+      'Compara hasta 3 apartamentos lado a lado: precio, cuota, ahorros necesarios, rentabilidad y Domus Score en un solo vistazo.',
+    path: '/comparador',
+  })
 
   const items = ids
     .map((id) => APARTAMENTOS.find((a) => a.id === id))
@@ -193,8 +208,10 @@ export default function Comparador() {
         </div>
 
         <p className="compta-note">
-          Cuota y ahorros con 20% de entrada, gastos de compra (~6,3%), tasa 10,5% EA y 20 años.
-          El Domus Score combina asequibilidad, rentabilidad y valorización.
+          Cuota y ahorros con {Math.round(PCT_ENTRADA * 100)}% de entrada, gastos de compra (~
+          {(gastosDeCompra(1).pctTotal * 100).toFixed(1).replace('.', ',')}%), tasa{' '}
+          {(TASA_EA_DEFAULT * 100).toFixed(1).replace('.', ',')}% EA y {PLAZO_DEFAULT} años. El Domus
+          Score combina asequibilidad, rentabilidad y valorización.
         </p>
       </div>
     </section>

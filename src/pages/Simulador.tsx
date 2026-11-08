@@ -3,14 +3,19 @@ import { Link } from 'react-router-dom'
 import AnimatedNumber from '../components/AnimatedNumber'
 import Reveal from '../components/Reveal'
 import {
+  PCT_CUOTA_INGRESO,
   PCT_ENTRADA,
   PCT_FINANCIACION,
+  PLAZO_DEFAULT,
+  TASA_EA_DEFAULT,
   cuotaMensualFrancesa,
   gastosDeCompra,
   presupuestoMaximo,
   tablaAmortizacion,
 } from '../utils/finanzas'
 import { formatCOP, formatMillones, formatPct } from '../utils/format'
+import { usePageMeta } from '../hooks/usePageMeta'
+import { track } from '../utils/analytics'
 import './simulador.css'
 
 function soloDigitos(valor: string): number {
@@ -45,8 +50,15 @@ function Campo({ label, valor, onChange, sufijo }: CampoProps) {
 const PLAZOS = [5, 10, 15, 20, 25, 30]
 
 export default function Simulador() {
-  const [tasa, setTasa] = useState(10.5)
-  const [plazo, setPlazo] = useState(20)
+  usePageMeta({
+    title: 'Simulador de crédito y presupuesto máximo',
+    description:
+      'Calcula tu presupuesto máximo y simula tu crédito hipotecario con sistema francés, gastos de compra y cuota real en Bogotá.',
+    path: '/simulador',
+  })
+
+  const [tasa, setTasa] = useState(TASA_EA_DEFAULT * 100)
+  const [plazo, setPlazo] = useState(PLAZO_DEFAULT)
 
   const [ahorros, setAhorros] = useState(60_000_000)
   const [ingreso, setIngreso] = useState(4_500_000)
@@ -58,7 +70,7 @@ export default function Simulador() {
     () => presupuestoMaximo(ahorros, ingreso, tasaEA, plazo),
     [ahorros, ingreso, tasaEA, plazo],
   )
-  const cuotaMaxima = ingreso * 0.3
+  const cuotaMaxima = ingreso * PCT_CUOTA_INGRESO
 
   const capital = precio * PCT_FINANCIACION
   const cuota = useMemo(
@@ -69,7 +81,7 @@ export default function Simulador() {
   const ahorrosNecesarios = precio * PCT_ENTRADA + gastos.total
   const totalPagado = cuota * plazo * 12
   const interesesTotales = totalPagado - capital
-  const ingresoRequerido = cuota / 0.3
+  const ingresoRequerido = cuota / PCT_CUOTA_INGRESO
 
   const resumenAnual = useMemo(() => {
     const filas = tablaAmortizacion(capital, tasaEA, plazo)
@@ -157,7 +169,7 @@ export default function Simulador() {
               </div>
               <ul className="sim-resultado__list">
                 <li>
-                  <span>Cuota máxima (30% del ingreso)</span>
+                  <span>Cuota máxima ({Math.round(PCT_CUOTA_INGRESO * 100)}% del ingreso)</span>
                   <strong>{formatCOP(cuotaMaxima)}</strong>
                 </li>
                 <li>
@@ -174,6 +186,7 @@ export default function Simulador() {
               <Link
                 to={`/apartamentos?presupuesto=${maximo}`}
                 className="btn btn--primary sim-resultado__cta"
+                onClick={() => track('simulador_ver_apartamentos', { presupuesto: maximo })}
               >
                 Ver apartamentos en este rango →
               </Link>
@@ -200,7 +213,8 @@ export default function Simulador() {
               </div>
               <p className="sim-resultado__hint">
                 Para que la cuota sea sostenible necesitas un ingreso desde{' '}
-                <strong>{formatCOP(ingresoRequerido)}</strong> (cuota = 30% del ingreso).
+                <strong>{formatCOP(ingresoRequerido)}</strong> (cuota ={' '}
+                {Math.round(PCT_CUOTA_INGRESO * 100)}% del ingreso).
               </p>
             </div>
 

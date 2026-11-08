@@ -7,6 +7,7 @@ import { useComparador } from '../context/ComparadorContext'
 import { APARTAMENTOS } from '../data/apartamentos'
 import { LOCALIDADES } from '../data/localidades'
 import { formatMillones } from '../utils/format'
+import { usePageMeta } from '../hooks/usePageMeta'
 import './apartamentos.css'
 
 type Orden = 'recientes' | 'precio-asc' | 'precio-desc' | 'm2-asc' | 'rentabilidad'
@@ -32,6 +33,13 @@ export default function Apartamentos() {
   const [params] = useSearchParams()
   const navigate = useNavigate()
   const { toggle, ids } = useComparador()
+
+  usePageMeta({
+    title: 'Apartamentos en venta en Bogotá',
+    description:
+      'Explora apartamentos verificados en Bogotá con filtros por presupuesto, localidad, estrato y rentabilidad. Costo real visible desde la primera ficha.',
+    path: '/apartamentos',
+  })
 
   const [presupuesto, setPresupuesto] = useState(() => {
     const p = Number(params.get('presupuesto'))
@@ -256,14 +264,14 @@ export default function Apartamentos() {
                   className={modo === 'vivir' ? 'is-active' : ''}
                   onClick={() => cambiarModo('vivir')}
                 >
-                  🏠 Vivir
+                  <span aria-hidden="true">🏠</span> Vivir
                 </button>
                 <button
                   type="button"
                   className={modo === 'inversor' ? 'is-active' : ''}
                   onClick={() => cambiarModo('inversor')}
                 >
-                  📈 Inversor
+                  <span aria-hidden="true">📈</span> Inversor
                 </button>
               </div>
             </div>

@@ -1,7 +1,13 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { formatMillones } from '../utils/format'
-import { presupuestoMaximo } from '../utils/finanzas'
+import {
+  PCT_CUOTA_INGRESO,
+  PLAZO_DEFAULT,
+  TASA_EA_DEFAULT,
+  presupuestoMaximo,
+} from '../utils/finanzas'
+import { track } from '../utils/analytics'
 import './buscador-inverso.css'
 
 const HAB_OPTS = [
@@ -28,6 +34,7 @@ export default function BuscadorInverso() {
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!valido) return
+    track('buscador_inverso', { presupuesto: maximo, hab })
     const params = new URLSearchParams({ presupuesto: String(maximo), hab })
     navigate(`/apartamentos?${params.toString()}`)
   }
@@ -89,8 +96,9 @@ export default function BuscadorInverso() {
       </div>
 
       <p className="buscador__note">
-        Estimado con tasa 10,5% EA, plazo 20 años, cuota máx. 30% de tus ingresos y gastos de compra
-        incluidos.
+        Estimado con tasa {(TASA_EA_DEFAULT * 100).toFixed(1).replace('.', ',')}% EA, plazo{' '}
+        {PLAZO_DEFAULT} años, cuota máx. {Math.round(PCT_CUOTA_INGRESO * 100)}% de tus ingresos y
+        gastos de compra incluidos.
       </p>
     </form>
   )

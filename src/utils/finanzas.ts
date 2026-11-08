@@ -53,7 +53,7 @@ export function presupuestoMaximo(
   const cuotaMax = ingresoMensual * PCT_CUOTA_INGRESO
   const capitalCredito = capitalDesdeCuota(cuotaMax, tasaEA, anios)
   const precioPorCredito = capitalCredito / PCT_FINANCIACION
-  const pctEntradaGastos = PCT_ENTRADA + 0.063
+  const pctEntradaGastos = PCT_ENTRADA + gastosDeCompra(1).pctTotal
   const precioPorAhorros = ahorros / pctEntradaGastos
   return Math.max(0, Math.floor(Math.min(precioPorCredito, precioPorAhorros) / 1_000_000) * 1_000_000)
 }

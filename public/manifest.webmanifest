@@ -1,0 +1,19 @@
+{
+  "name": "DOMUS — Apartamentos en Bogotá",
+  "short_name": "DOMUS",
+  "description": "Portal inmobiliario con claridad total: buscador inverso, Panel de Claridad, simulador de crédito y comparador de apartamentos en Bogotá.",
+  "lang": "es-CO",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#F7F9FC",
+  "theme_color": "#0B1F3A",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
